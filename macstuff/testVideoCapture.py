@@ -7,15 +7,18 @@ import random
 
 def randomizeMusic():
 	fileCat = 'happy'
-	songNumber = random.randint(1,100)
-	categoryNumber = random.randint(1,3)
-	if categoryNumber==2:
+	#songNumber = random.randint(1,100)
+	#categoryNumber = random.randint(1,3)
+	songNumber = 1
+	categoryNumber = 1 
+	if categoryNumber==1:
+		fileCat = 'happy'
+	elif categoryNumber==2:
 		fileCat = 'sad'
 	elif categoryNumber==3:
 		fileCat = 'angry'
-	fileCat = 'happy'
-	categoryNumber = 1
-	filePath = 'songs/'+fileCat+'/song'+str(categoryNumber)+'.wav'
+
+	filePath = 'songs/'+fileCat+'/song'+str(songNumber)+'.wav'
 	return [filePath,categoryNumber]
 	
 
