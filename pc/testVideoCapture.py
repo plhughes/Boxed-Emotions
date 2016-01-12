@@ -2,20 +2,21 @@ import numpy as np
 import cv2
 import pygame
 import time
+import random
 
 
 def randomizeMusic():
 	fileCat = 'happy'
-	#songNumber = random.randint(1,100)
-	#categoryNumber = random.randint(1,3)
-	songNumber = 1
-	categoryNumber = 0
+	songNumber = random.randint(0,8)
+	categoryNumber = random.randint(0,1)
+	#songNumber = 1
+	#categoryNumber = 0
 	if categoryNumber==0:
 		fileCat = 'happy'
 	elif categoryNumber==1:
-		fileCat = 'sad'
-	elif categoryNumber==2:
 		fileCat = 'angry'
+	elif categoryNumber==2:
+		fileCat = 'sad'
 	filePath = 'songs\\'+fileCat+'\\song'+str(songNumber)+'.wav'
 	print filePath
 	return [filePath,categoryNumber]
@@ -32,9 +33,9 @@ def capVid():
 	record = False
 	out = None
 	numVid = [0, 0, 0]
+	waitPersonLeave = 0
 	waitTime = 200
 
-	
 	#music
 	pygame.init()
 	pygame.mixer.init()
@@ -71,15 +72,15 @@ def capVid():
 				if categoryNumber==0:
 					videoFolder = 'happy'
 				elif categoryNumber==1:
-					videoFolder = 'sad'
-				elif categoryNumber==2:
 					videoFolder = 'angry'
+				elif categoryNumber==2:
+					videoFolder = 'sad'
 				name = 'videos\\' + videoFolder + '\\output' + str(numVid[categoryNumber]) + '.avi'
 				out = cv2.VideoWriter(name, fourcc, 20.0, (640,480))
 				numVid[categoryNumber] += 1
 				print "Start Recording"
 			
-			#stop recording if the perosn left
+			#stop recording if the person left
 			elif record and (numW < 100 or pygame.mixer.music.get_busy() == False):
 				record = False
 				music = False
