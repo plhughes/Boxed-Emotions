@@ -1,14 +1,15 @@
 import numpy as np
 import cv2
 import pygame
-import time
 import random
+import sys
+import os
 
 
 def randomizeMusic():
 	fileCat = 'happy'
 	songNumber = random.randint(0,8)
-	categoryNumber = random.randint(0,1)
+	categoryNumber = random.randint(0,2)
 	#songNumber = 1
 	#categoryNumber = 0
 	if categoryNumber==0:
@@ -22,20 +23,25 @@ def randomizeMusic():
 	return [filePath,categoryNumber]
 	
 
-def capVid():
-	cap = cv2.VideoCapture(0)
+def capVid(argv):
+	cap = cv2.VideoCapture(1)
 
-	#Define the codec and create VideoWriter object
-	fourcc = cv2.cv.CV_FOURCC(*'IYUV') 
-	
+	#Define the codec and create VideoWriter object 
+	fourcc = cv2.cv.CV_FOURCC(*'MSVC')
+	out = None
+	numVid = [7, 7, 7]
+	record = False
 	music = False
 	musicCount = 0
-	record = False
-	out = None
-	numVid = [0, 0, 0]
-	waitPersonLeave = 0
 	waitTime = 200
-
+	
+	#allows time between when music stop and person leaves
+	waitPersonLeave = 500
+	if len(argv) > 1:
+		waitPersonLeave = int(argv[1])
+	personWaitCount = waitPersonLeave
+	print "Will wait ", waitPersonLeave
+	
 	#music
 	pygame.init()
 	pygame.mixer.init()
@@ -50,12 +56,11 @@ def capVid():
 			gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 			ret, black = cv2.threshold(gray,205,255,cv2.THRESH_BINARY)
 			
-			
 			#num white pic
 			numW  = cv2.countNonZero(black)
 			
 			#start music
-			if numW > 100 and not(music):
+			if numW > 100 and not(music) and personWaitCount > waitPersonLeave:
 				music = True
 				[filePath,categoryNumber] = randomizeMusic()
 				pygame.mixer.music.load(filePath)
@@ -66,7 +71,7 @@ def capVid():
 			elif music and musicCount <= waitTime:
 				musicCount += 1
 			
-			#start recording
+			#create new video
 			elif musicCount > waitTime and not(record):
 				record = True
 				if categoryNumber==0:
@@ -75,21 +80,33 @@ def capVid():
 					videoFolder = 'angry'
 				elif categoryNumber==2:
 					videoFolder = 'sad'
-				name = 'videos\\' + videoFolder + '\\output' + str(numVid[categoryNumber]) + '.avi'
-				out = cv2.VideoWriter(name, fourcc, 20.0, (640,480))
+				num = numVid[categoryNumber]
+				name = 'videos\\' + videoFolder + '\\output' + str(num) + '.avi'
+				out = cv2.VideoWriter(name, fourcc, 8.0, (640,480))
 				numVid[categoryNumber] += 1
 				print "Start Recording"
+				
+				#delete older videos
+				if num >= 9:
+					deleteName = 'videos\\' + videoFolder + '\\output' + str(num-9) + '.avi'
+					print "Deleting ", deleteName
+					os.remove(deleteName)
 			
 			#stop recording if the person left
 			elif record and (numW < 100 or pygame.mixer.music.get_busy() == False):
 				record = False
 				music = False
 				musicCount = 0
+				personWaitCount = 0
 				out.release()
 				pygame.mixer.music.stop()
-				print "Stop Recording"	
-				time.sleep(30)
+				print "Stop Recording"
 			
+			#waiting a few seconds
+			#allows time for user to leave
+			elif not(record) and not(music):
+				personWaitCount += 1
+				
 			#record
 			elif record:
 				out.write(black)
@@ -105,4 +122,4 @@ def capVid():
 	cv2.destroyAllWindows()
 	
 if __name__ == "__main__":
-	capVid()
+	capVid(sys.argv)
