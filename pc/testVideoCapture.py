@@ -29,7 +29,7 @@ def capVid(argv):
 	#Define the codec and create VideoWriter object 
 	fourcc = cv2.cv.CV_FOURCC(*'MSVC')
 	out = None
-	numVid = [7, 7, 7]
+	numVid = [0, 0, 0]
 	record = False
 	music = False
 	musicCount = 0
@@ -87,8 +87,8 @@ def capVid(argv):
 				print "Start Recording"
 				
 				#delete older videos
-				if num >= 9:
-					deleteName = 'videos\\' + videoFolder + '\\output' + str(num-9) + '.avi'
+				if num > 9:
+					deleteName = 'videos\\' + videoFolder + '\\output' + str(num-10) + '.avi'
 					print "Deleting ", deleteName
 					os.remove(deleteName)
 			
