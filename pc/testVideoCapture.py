@@ -33,14 +33,14 @@ def capVid(argv):
 	record = False
 	music = False
 	musicCount = 0
-	waitTime = 200
+	waitTime = 50
 	
 	#allows time between when music stop and person leaves
-	waitPersonLeave = 500
+	waitPersonLeave = 400
 	if len(argv) > 1:
 		waitPersonLeave = int(argv[1])
 	personWaitCount = waitPersonLeave
-	print "Will wait ", waitPersonLeave
+	print "Will wait", waitPersonLeave
 	
 	#music
 	pygame.init()
@@ -54,7 +54,7 @@ def capVid(argv):
 		if ret == True:
 			#make the picture black and white
 			gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-			ret, black = cv2.threshold(gray,205,255,cv2.THRESH_BINARY)
+			ret, black = cv2.threshold(gray,180,255,cv2.THRESH_BINARY)
 			
 			#num white pic
 			numW  = cv2.countNonZero(black)
@@ -86,10 +86,16 @@ def capVid(argv):
 				numVid[categoryNumber] += 1
 				print "Start Recording"
 				
+				#write mean rgb to file
+				aveRGB = np.mean(gray).item()
+				txt = open('speed.txt', 'w')
+				txt.write(str(aveRGB))
+				txt.close()
+				
 				#delete older videos
 				if num > 9:
 					deleteName = 'videos\\' + videoFolder + '\\output' + str(num-10) + '.avi'
-					print "Deleting ", deleteName
+					print "Deleting", deleteName
 					os.remove(deleteName)
 			
 			#stop recording if the person left
