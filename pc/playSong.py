@@ -19,7 +19,7 @@ def main():
 	channels = 1
 	swidth = 2
 	
-	threshold = 100.0
+	threshold = 80.0
 	color = 125.0
 	
 	#wait a while before reading he file
@@ -29,6 +29,7 @@ def main():
 	readCount = 0
 	
 	change_rate = 1
+	max_change_rate = 500
 	
 	playSong = True
 	while (True):
@@ -53,12 +54,12 @@ def main():
 				#change the change_rate according to the threshold
 				if(new_color!=color):
 					s.stop()
-					color = int(new_color)
+					color = new_color
 					if(color<=threshold):
-						change_rate = -5000
+						change_rate = -max_change_rate
 						
 					else:
-						change_rate = 5000
+						change_rate = max_change_rate
 					#read the current framerate of the song
 					spf = wave.open('bgSong.wav', 'rb')
 					rate=spf.getframerate()
@@ -69,7 +70,12 @@ def main():
 					wf.setnchannels(channels)
 					wf.setsampwidth(swidth)
 					new_rate = rate+change_rate
-					wf.setframerate(new_rate)
+					if new_rate<20000:
+						new_rate = 20000
+					elif new_rate > 500000:
+						new_rate = 500000
+						
+					wf.setframerate(500000)
 					print "color", color
 					print "change_rate", change_rate
 					print "rate", new_rate
