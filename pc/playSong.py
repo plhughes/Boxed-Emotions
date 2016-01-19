@@ -29,7 +29,7 @@ def main():
 	readCount = 0
 	
 	change_rate = 1
-	max_change_rate = 500
+	max_change_rate = 5000
 	
 	playSong = True
 	while (True):
@@ -75,10 +75,11 @@ def main():
 					elif new_rate > 500000:
 						new_rate = 500000
 						
-					wf.setframerate(500000)
+					wf.setframerate(new_rate)
 					print "color", color
 					print "change_rate", change_rate
-					print "rate", new_rate
+					print "old_rate", rate
+					print "new_rate", new_rate
 				
 					#write the new wave file
 					wf.writeframes(signal)
@@ -86,7 +87,7 @@ def main():
 					s = pygame.mixer.Sound('bgSong.wav')
 				
 					#play it again
-					ch = s.play()
+					ch = s.play(-1)
 				readCount = 0	
 	
 			readCount+=1
