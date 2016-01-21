@@ -1,7 +1,9 @@
+#Boxed Emotion
 
 import pygame
 import wave
 
+'''A function to check if s is a float'''
 def is_number(s):
     try:
         float(s)
@@ -9,6 +11,7 @@ def is_number(s):
     except ValueError:
         return False
 
+'''Main program'''
 def main():
 	
 	pygame.init()
@@ -42,7 +45,7 @@ def main():
 			if(readCount>=readWait):
 			
 				#read in the avg rgb color from speed.txt
-				f = open("speed.txt","r")
+				f = open("/Volumes/Courses/CS267/BoxedEmotion/speed.txt","r")
 				string_number = f.read()
 				#print "string_number", string_number
 				if(is_number(string_number)==False):
