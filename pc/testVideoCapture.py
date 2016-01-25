@@ -25,6 +25,7 @@ def randomizeMusic():
 
 def capVid(argv):
 	cap = cv2.VideoCapture(1)
+	thresh = 150000
 
 	#Define the codec and create VideoWriter object 
 	fourcc = cv2.cv.CV_FOURCC(*'MSVC')
@@ -36,10 +37,10 @@ def capVid(argv):
 	waitTime = 50
 	
 	#allows time between when music stop and person leaves
-	waitPersonLeave = 400
+	waitPersonLeave = 200
 	if len(argv) > 1:
 		waitPersonLeave = int(argv[1])
-	personWaitCount = waitPersonLeave
+	personWaitCount = 0
 	print "Will wait", waitPersonLeave
 	
 	#music
@@ -54,13 +55,15 @@ def capVid(argv):
 		if ret == True:
 			#make the picture black and white
 			gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-			ret, black = cv2.threshold(gray,180,255,cv2.THRESH_BINARY)
+			ret, gray2= cv2.threshold(gray,180,255,cv2.THRESH_TRUNC)
+			ret, black = cv2.threshold(gray2,130,255,cv2.THRESH_BINARY)
 			
 			#num white pic
 			numW  = cv2.countNonZero(black)
+			print "White" + str(numW)
 			
 			#start music
-			if numW > 100 and not(music) and personWaitCount > waitPersonLeave:
+			if numW > thresh and not(music) and personWaitCount > waitPersonLeave:
 				music = True
 				[filePath,categoryNumber] = randomizeMusic()
 				pygame.mixer.music.load(filePath)
@@ -99,7 +102,7 @@ def capVid(argv):
 					os.remove(deleteName)
 			
 			#stop recording if the person left
-			elif record and (numW < 100 or pygame.mixer.music.get_busy() == False):
+			elif record and (numW < thresh  or pygame.mixer.music.get_busy() == False):
 				record = False
 				music = False
 				musicCount = 0

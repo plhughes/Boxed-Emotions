@@ -32,7 +32,7 @@ def main():
 	readCount = 0
 	
 	change_rate = 1
-	max_change_rate = 5000
+	max_change_rate = 8000
 	
 	playSong = True
 	while (True):
