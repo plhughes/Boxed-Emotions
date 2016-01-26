@@ -22,19 +22,21 @@ def main():
 	channels = 1
 	swidth = 2
 	
-	threshold = 80.0
+	threshold = 132.0
 	color = 125.0
 	
 	#wait a while before reading he file
-	readWait = 100
+	readWait = 50
 	
 	#count of waiting to read the file
 	readCount = 0
 	
 	change_rate = 1
-	max_change_rate = 8000
+	max_change_rate = 20000
 	
 	playSong = True
+	startPlaying = False
+	new_color = 0
 	while (True):
 		for event in pygame.event.get():
 			if event.type == pygame.KEYDOWN:
@@ -47,16 +49,27 @@ def main():
 				#read in the avg rgb color from speed.txt
 				f = open("/Volumes/Courses/CS267/BoxedEmotion/speed.txt","r")
 				string_number = f.read()
-				#print "string_number", string_number
-				if(is_number(string_number)==False):
+				
+				#if there is start written in the text file then start playing the music
+				if (string_number == "start"):
+					startPlaying = True
+				elif(is_number(string_number)==False):
 					continue
-				new_color = float(string_number)
-				#print "change_rate", change_rate
+				else:
+					#if there is a number in the text file then save the number as the new color
+					#and stop playing the music
+					new_color = float(string_number)
+					s.stop()
+					startPlaying = False
+				
+				
+				#if startPlaying is true start playing the music
+				if startPlaying: 
+					ch = s.play(-1)
 				
 				#if the new color is different from the old one
 				#change the change_rate according to the threshold
-				if(new_color!=color):
-					s.stop()
+				elif(new_color!=color):
 					color = new_color
 					if(color<=threshold):
 						change_rate = -max_change_rate
@@ -89,8 +102,6 @@ def main():
 					wf.close()
 					s = pygame.mixer.Sound('bgSong.wav')
 				
-					#play it again
-					ch = s.play(-1)
 				readCount = 0	
 	
 			readCount+=1

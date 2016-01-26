@@ -8,7 +8,7 @@ import os
 
 def randomizeMusic():
 	fileCat = 'happy'
-	songNumber = random.randint(0,8)
+	songNumber = random.randint(0,19)
 	categoryNumber = random.randint(0,2)
 	#songNumber = 1
 	#categoryNumber = 0
@@ -25,7 +25,7 @@ def randomizeMusic():
 
 def capVid(argv):
 	cap = cv2.VideoCapture(1)
-	thresh = 150000
+	thresh = 290000
 
 	#Define the codec and create VideoWriter object 
 	fourcc = cv2.cv.CV_FOURCC(*'MSVC')
@@ -63,7 +63,7 @@ def capVid(argv):
 			print "White" + str(numW)
 			
 			#start music
-			if numW > thresh and not(music) and personWaitCount > waitPersonLeave:
+			if numW < thresh and not(music) and personWaitCount > waitPersonLeave:
 				music = True
 				[filePath,categoryNumber] = randomizeMusic()
 				pygame.mixer.music.load(filePath)
@@ -102,7 +102,7 @@ def capVid(argv):
 					os.remove(deleteName)
 			
 			#stop recording if the person left
-			elif record and (numW < thresh  or pygame.mixer.music.get_busy() == False):
+			elif record and (numW > thresh  or pygame.mixer.music.get_busy() == False):
 				record = False
 				music = False
 				musicCount = 0
@@ -110,6 +110,11 @@ def capVid(argv):
 				out.release()
 				pygame.mixer.music.stop()
 				print "Stop Recording"
+
+				#telling background music to start playing again
+				txt = open('speed.txt', 'w')
+				txt.write('start')
+				txt.close()
 			
 			#waiting a few seconds
 			#allows time for user to leave
